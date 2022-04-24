@@ -24,97 +24,7 @@ import com.facebook.presto.split.SplitManager;
 import com.facebook.presto.sql.parser.SqlParser;
 import com.facebook.presto.sql.planner.iterative.IterativeOptimizer;
 import com.facebook.presto.sql.planner.iterative.Rule;
-import com.facebook.presto.sql.planner.iterative.rule.AddIntermediateAggregations;
-import com.facebook.presto.sql.planner.iterative.rule.CanonicalizeExpressions;
-import com.facebook.presto.sql.planner.iterative.rule.CreatePartialTopN;
-import com.facebook.presto.sql.planner.iterative.rule.DesugarAtTimeZone;
-import com.facebook.presto.sql.planner.iterative.rule.DesugarCurrentUser;
-import com.facebook.presto.sql.planner.iterative.rule.DesugarLambdaExpression;
-import com.facebook.presto.sql.planner.iterative.rule.DesugarRowSubscript;
-import com.facebook.presto.sql.planner.iterative.rule.DesugarTryExpression;
-import com.facebook.presto.sql.planner.iterative.rule.DetermineJoinDistributionType;
-import com.facebook.presto.sql.planner.iterative.rule.DetermineSemiJoinDistributionType;
-import com.facebook.presto.sql.planner.iterative.rule.EliminateCrossJoins;
-import com.facebook.presto.sql.planner.iterative.rule.EliminateEmptyJoins;
-import com.facebook.presto.sql.planner.iterative.rule.EvaluateZeroLimit;
-import com.facebook.presto.sql.planner.iterative.rule.EvaluateZeroSample;
-import com.facebook.presto.sql.planner.iterative.rule.ExtractSpatialJoins;
-import com.facebook.presto.sql.planner.iterative.rule.GatherAndMergeWindows;
-import com.facebook.presto.sql.planner.iterative.rule.ImplementBernoulliSampleAsFilter;
-import com.facebook.presto.sql.planner.iterative.rule.ImplementFilteredAggregations;
-import com.facebook.presto.sql.planner.iterative.rule.ImplementOffset;
-import com.facebook.presto.sql.planner.iterative.rule.InlineProjections;
-import com.facebook.presto.sql.planner.iterative.rule.InlineSqlFunctions;
-import com.facebook.presto.sql.planner.iterative.rule.MergeFilters;
-import com.facebook.presto.sql.planner.iterative.rule.MergeLimitWithDistinct;
-import com.facebook.presto.sql.planner.iterative.rule.MergeLimitWithSort;
-import com.facebook.presto.sql.planner.iterative.rule.MergeLimitWithTopN;
-import com.facebook.presto.sql.planner.iterative.rule.MergeLimits;
-import com.facebook.presto.sql.planner.iterative.rule.MultipleDistinctAggregationToMarkDistinct;
-import com.facebook.presto.sql.planner.iterative.rule.PickTableLayout;
-import com.facebook.presto.sql.planner.iterative.rule.PlanRemotePojections;
-import com.facebook.presto.sql.planner.iterative.rule.PruneAggregationColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneAggregationSourceColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneCountAggregationOverScalar;
-import com.facebook.presto.sql.planner.iterative.rule.PruneCrossJoinColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneFilterColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneIndexSourceColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneJoinChildrenColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneJoinColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneLimitColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneMarkDistinctColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneOrderByInAggregation;
-import com.facebook.presto.sql.planner.iterative.rule.PruneOutputColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneProjectColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneRedundantProjectionAssignments;
-import com.facebook.presto.sql.planner.iterative.rule.PruneSemiJoinColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneSemiJoinFilteringSourceColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneTableScanColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneTopNColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneValuesColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PruneWindowColumns;
-import com.facebook.presto.sql.planner.iterative.rule.PushAggregationThroughOuterJoin;
-import com.facebook.presto.sql.planner.iterative.rule.PushDownDereferences;
-import com.facebook.presto.sql.planner.iterative.rule.PushLimitThroughMarkDistinct;
-import com.facebook.presto.sql.planner.iterative.rule.PushLimitThroughOffset;
-import com.facebook.presto.sql.planner.iterative.rule.PushLimitThroughOuterJoin;
-import com.facebook.presto.sql.planner.iterative.rule.PushLimitThroughProject;
-import com.facebook.presto.sql.planner.iterative.rule.PushLimitThroughSemiJoin;
-import com.facebook.presto.sql.planner.iterative.rule.PushLimitThroughUnion;
-import com.facebook.presto.sql.planner.iterative.rule.PushOffsetThroughProject;
-import com.facebook.presto.sql.planner.iterative.rule.PushPartialAggregationThroughExchange;
-import com.facebook.presto.sql.planner.iterative.rule.PushPartialAggregationThroughJoin;
-import com.facebook.presto.sql.planner.iterative.rule.PushProjectionThroughExchange;
-import com.facebook.presto.sql.planner.iterative.rule.PushProjectionThroughUnion;
-import com.facebook.presto.sql.planner.iterative.rule.PushRemoteExchangeThroughAssignUniqueId;
-import com.facebook.presto.sql.planner.iterative.rule.PushTableWriteThroughUnion;
-import com.facebook.presto.sql.planner.iterative.rule.PushTopNThroughUnion;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveEmptyDelete;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveFullSample;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveRedundantIdentityProjections;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveTrivialFilters;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveUnreferencedScalarApplyNodes;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveUnreferencedScalarLateralNodes;
-import com.facebook.presto.sql.planner.iterative.rule.RemoveUnsupportedDynamicFilters;
-import com.facebook.presto.sql.planner.iterative.rule.ReorderJoins;
-import com.facebook.presto.sql.planner.iterative.rule.RewriteAggregationIfToFilter;
-import com.facebook.presto.sql.planner.iterative.rule.RewriteFilterWithExternalFunctionToProject;
-import com.facebook.presto.sql.planner.iterative.rule.RewriteSpatialPartitioningAggregation;
-import com.facebook.presto.sql.planner.iterative.rule.RuntimeReorderJoinSides;
-import com.facebook.presto.sql.planner.iterative.rule.SimplifyCardinalityMap;
-import com.facebook.presto.sql.planner.iterative.rule.SimplifyCountOverConstant;
-import com.facebook.presto.sql.planner.iterative.rule.SimplifyExpressions;
-import com.facebook.presto.sql.planner.iterative.rule.SimplifyRowExpressions;
-import com.facebook.presto.sql.planner.iterative.rule.SingleDistinctAggregationToGroupBy;
-import com.facebook.presto.sql.planner.iterative.rule.TransformCorrelatedInPredicateToJoin;
-import com.facebook.presto.sql.planner.iterative.rule.TransformCorrelatedLateralJoinToJoin;
-import com.facebook.presto.sql.planner.iterative.rule.TransformCorrelatedScalarAggregationToJoin;
-import com.facebook.presto.sql.planner.iterative.rule.TransformCorrelatedScalarSubquery;
-import com.facebook.presto.sql.planner.iterative.rule.TransformCorrelatedSingleRowSubqueryToProject;
-import com.facebook.presto.sql.planner.iterative.rule.TransformExistsApplyToLateralNode;
-import com.facebook.presto.sql.planner.iterative.rule.TransformUncorrelatedInPredicateSubqueryToSemiJoin;
-import com.facebook.presto.sql.planner.iterative.rule.TransformUncorrelatedLateralToJoin;
-import com.facebook.presto.sql.planner.iterative.rule.TranslateExpressions;
+import com.facebook.presto.sql.planner.iterative.rule.*;
 import com.facebook.presto.sql.planner.optimizations.AddExchanges;
 import com.facebook.presto.sql.planner.optimizations.AddLocalExchanges;
 import com.facebook.presto.sql.planner.optimizations.ApplyConnectorOptimization;
@@ -277,7 +187,12 @@ public class PlanOptimizers
                         .build());
 
         PlanOptimizer predicatePushDown = new StatsRecordingPlanOptimizer(optimizerStats, new PredicatePushDown(metadata, sqlParser));
-
+        builder.add(new IterativeOptimizer(
+                ruleStats,
+                statsCalculator,
+                costCalculator,
+                ImmutableSet.of(
+                        new TableScanToUnionAll())));
         builder.add(
                 // Clean up all the sugar in expressions, e.g. AtTimeZone, must be run before all the other optimizers
                 new IterativeOptimizer(
@@ -613,6 +528,7 @@ public class PlanOptimizers
                 ImmutableSet.of(
                         new AddIntermediateAggregations(),
                         new RemoveRedundantIdentityProjections())));
+
 
         builder.add(
                 new ApplyConnectorOptimization(() -> planOptimizerManager.getOptimizers(PHYSICAL)),

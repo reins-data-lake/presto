@@ -126,7 +126,8 @@ public final class PlanMatchPattern
         return any(sources).with(new NotPlanNodeMatcher(excludeNodeClass));
     }
 
-    public static PlanMatchPattern tableScan(String expectedTableName)
+    public static PlanMatchPattern
+    tableScan(String expectedTableName)
     {
         return TableScanMatcher.create(expectedTableName);
     }

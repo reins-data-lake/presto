@@ -35,7 +35,7 @@ import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 
 @Immutable
-public final class TableScanNode
+public class TableScanNode
         extends PlanNode
 {
     private final TableHandle table;

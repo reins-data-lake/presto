@@ -367,7 +367,7 @@ public class SqlQueryExecution
 
                 metadata.beginQuery(getSession(), plan.getConnectors());
 
-                // plan distribution of query
+                // plan distriMetadatabution of query
                 planDistribution(plan);
 
                 // transition to starting
