@@ -1,5 +1,6 @@
 package com.facebook.presto.sql.planner.iterative.rule;
 
+import com.facebook.presto.example.ExampleColumnHandle;
 import com.facebook.presto.matching.Captures;
 import static java.util.Collections.unmodifiableMap;
 import com.facebook.presto.matching.Pattern;
@@ -31,19 +32,22 @@ public class TableScanToUnionAll
 
     @Override
     public Result apply(TableScanNode node, Captures captures, Context context) {
-        String[] nodeNames = new String[]{"example","example"};
+        String[] connectorNames = new String[]{"example","example2"};
         Map<VariableReferenceExpression, List<VariableReferenceExpression>> outputToInputs = new HashMap<>();
         ImmutableList.Builder<PlanNode> sources = ImmutableList.builder();
-        for(String nodeName:nodeNames) {
+        for(String connectorName:connectorNames) {
             ImmutableList.Builder<VariableReferenceExpression> outputs = ImmutableList.builder();
             Map<VariableReferenceExpression, ColumnHandle> assignments = new HashMap<>();
 //        Map<VariableReferenceExpression, VariableReferenceExpression> oldToNew = new HashMap<>();
 
             for (Map.Entry<VariableReferenceExpression, ColumnHandle> entry : node.getAssignments().entrySet()) {
                 VariableReferenceExpression variable = entry.getKey();
-                ColumnHandle columnHandle = entry.getValue();
+                System.out.println(ExampleColumnHandle.class);
+                System.out.println(entry.getValue().getClass());
+                ExampleColumnHandle columnHandle = (ExampleColumnHandle) entry.getValue();
+
                 VariableReferenceExpression newVariable = context.getVariableAllocator().newVariable(variable.getSourceLocation(), "modVar", variable.getType());
-                assignments.put(newVariable, columnHandle);
+                assignments.put(newVariable, new ExampleColumnHandle(connectorName, columnHandle.getColumnName(), columnHandle.getColumnType(), columnHandle.getOrdinalPosition()));
                 outputs.add(newVariable);
                 if (outputToInputs.containsKey(variable)) {
                     outputToInputs.get(variable).add(newVariable);
