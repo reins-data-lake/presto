@@ -19,6 +19,9 @@ import com.facebook.presto.spi.ConnectorSplit;
 import com.facebook.presto.spi.ConnectorTableHandle;
 import com.facebook.presto.spi.ConnectorTableLayoutHandle;
 import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+
 
 public class ExampleHandleResolver
         implements ConnectorHandleResolver

@@ -303,12 +303,13 @@ public class PlanOptimizers
                                 new RemoveRedundantIdentityProjections(),
                                 new TransformCorrelatedSingleRowSubqueryToProject())),
                 new CheckSubqueryNodesAreRewritten());
+
         builder.add(new IterativeOptimizer(
                 ruleStats,
                 statsCalculator,
                 costCalculator,
                 ImmutableSet.of(
-                        new TableScanToUnionAll())));
+                        new TableScanToUnionAll(metadata))));
 
         // TODO: move this before optimization if possible!!
         // Replace all expressions with row expressions
