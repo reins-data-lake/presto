@@ -133,7 +133,7 @@ public class IterativeOptimizer
             Iterator<Rule<?>> possiblyMatchingRules = ruleIndex.getCandidates(node).iterator();
             while (possiblyMatchingRules.hasNext()) {
                 Rule<?> rule = possiblyMatchingRules.next();
-
+                System.out.println(rule.getClass());
                 if (!rule.isEnabled(context.session)) {
                     continue;
                 }

@@ -29,10 +29,11 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
 @Immutable
-public final class FilterNode
+public class FilterNode
         extends PlanNode
 {
     private final PlanNode source;
+
     private final RowExpression predicate;
 
     @JsonCreator

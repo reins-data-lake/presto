@@ -16,8 +16,6 @@ package com.facebook.presto.sql.planner.iterative.rule;
 
 import com.facebook.presto.Session;
 import com.facebook.presto.common.QualifiedObjectName;
-import com.facebook.presto.example.ExampleColumnHandle;
-import com.facebook.presto.example.ExampleHandleResolver;
 import com.facebook.presto.common.predicate.TupleDomain;
 import com.facebook.presto.matching.Captures;
 import static java.util.Collections.unmodifiableMap;
@@ -53,7 +51,7 @@ public class TableScanToUnionAll
 
     private static final Pattern<TableScanNode> PATTERN = tableScan().matching(TableScanToUnionAll::notSub);
     private static boolean notSub(TableScanNode tableScanNode){
-        return !SubTableScanNode.class.isInstance(tableScanNode);
+        return !(tableScanNode instanceof SubTableScanNode);
     }
 
     @Override
@@ -82,6 +80,7 @@ public class TableScanToUnionAll
 
     @Override
     public Result apply(TableScanNode node, Captures captures, Context context) {
+        //TODO: more nodes
         String[] connectorNames = new String[]{"mongo","mongo2"};
         Map<VariableReferenceExpression, List<VariableReferenceExpression>> outputToInputs = new HashMap<>();
         ImmutableList.Builder<PlanNode> sources = ImmutableList.builder();
@@ -91,8 +90,6 @@ public class TableScanToUnionAll
             TableHandle tableHandle = getTableHandleByDBName(context.getSession(), node.getTable(), connectorName);
           for (Map.Entry<VariableReferenceExpression, ColumnHandle> entry : node.getAssignments().entrySet()) {
                 VariableReferenceExpression variable = entry.getKey();
-                System.out.println(ExampleColumnHandle.class);
-                System.out.println(entry.getValue().getClass());
                 String colName = getColumnName(context.getSession(), node.getTable(), entry.getValue());
                 ColumnHandle newColHandle = getColumnHandelByTableNameAndColumnName(context.getSession(), node.getTable(), connectorName, colName);
 

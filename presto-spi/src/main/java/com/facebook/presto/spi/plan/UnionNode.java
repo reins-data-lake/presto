@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Immutable
-public final class UnionNode
+public class UnionNode
         extends SetOperationNode
 {
     @JsonCreator

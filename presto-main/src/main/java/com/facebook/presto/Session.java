@@ -91,6 +91,8 @@ public final class Session
     private final AccessControlContext context;
     private final Optional<Tracer> tracer;
 
+    private final Map<String, Set<String>> predictCache;
+
     private final RuntimeStats runtimeStats = new RuntimeStats();
 
     public Session(
@@ -138,6 +140,7 @@ public final class Session
         this.sessionPropertyManager = requireNonNull(sessionPropertyManager, "sessionPropertyManager is null");
         this.preparedStatements = requireNonNull(preparedStatements, "preparedStatements is null");
         this.sessionFunctions = requireNonNull(sessionFunctions, "sessionFunctions is null");
+        this.predictCache = new HashMap<>();
 
         ImmutableMap.Builder<ConnectorId, Map<String, String>> catalogPropertiesBuilder = ImmutableMap.builder();
         connectorProperties.entrySet().stream()
@@ -158,6 +161,7 @@ public final class Session
         this.tracer = requireNonNull(tracer, "tracer is null");
     }
 
+    public Map<String, Set<String>> getPredictCache(){return predictCache;};
     public QueryId getQueryId()
     {
         return queryId;
