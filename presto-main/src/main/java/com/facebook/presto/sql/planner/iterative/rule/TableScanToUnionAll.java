@@ -81,7 +81,7 @@ public class TableScanToUnionAll
     @Override
     public Result apply(TableScanNode node, Captures captures, Context context) {
         //TODO: more nodes
-        String[] connectorNames = new String[]{"mongo","mongo2"};
+        String[] connectorNames = new String[]{"mongo","mongo2","mongo3","mongo4","mongo","mongo5","mongo","mongo6","mongo","mongo7","mongo8","mongo9","hive"};
         Map<VariableReferenceExpression, List<VariableReferenceExpression>> outputToInputs = new HashMap<>();
         ImmutableList.Builder<PlanNode> sources = ImmutableList.builder();
         for(String connectorName:connectorNames) {

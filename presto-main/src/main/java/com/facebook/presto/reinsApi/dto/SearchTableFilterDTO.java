@@ -6,8 +6,7 @@ import java.util.List;
 
 @Data
 public class SearchTableFilterDTO {
-    String topic;
-    boolean realtime;
+    List<Long> idList;
     long startTime;
     long endTime;
     List<FieldFilter> filters;
