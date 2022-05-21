@@ -13,31 +13,16 @@
  */
 package com.facebook.presto.reinsApi.dto;
 
+import java.util.Set;
 
-import java.util.List;
+public class ResDTO {
+    Set<String> nodes;
 
-public class SearchTableFilterDTO {
-    List<Long> idList;
-    long startTime;
-    long endTime;
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
+    public Set<String> getNodes() {
+        return nodes;
     }
 
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
+    public void setNodes(Set<String> nodes) {
+        this.nodes = nodes;
     }
-
-    public void setIdList(List<Long> idList) {
-        this.idList = idList;
-    }
-    //    List<FieldFilter> filters;
-//    @Data
-//    public class FieldFilter {
-//        String field;
-//        String op;
-//        String val1;
-//        String val2;
-//    }
 }

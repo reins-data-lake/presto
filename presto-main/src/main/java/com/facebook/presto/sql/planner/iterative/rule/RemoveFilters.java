@@ -65,7 +65,7 @@ public class RemoveFilters implements Rule<FilterNode> {
         }
         try {
             if(edgeNodesCache==null){
-                HashSet<String> edgeNodes = GlobalIndexApi.getNodes(node.getPredicate());
+                Set<String> edgeNodes = GlobalIndexApi.getNodes(node.getPredicate());
                 predictCache.put(node.getPredicate().toString(), edgeNodes);
                 edgeNodesCache = edgeNodes;
             }

@@ -92,9 +92,7 @@ public class TableScanToUnionAll
                 VariableReferenceExpression variable = entry.getKey();
                 String colName = getColumnName(context.getSession(), node.getTable(), entry.getValue());
                 ColumnHandle newColHandle = getColumnHandelByTableNameAndColumnName(context.getSession(), node.getTable(), connectorName, colName);
-
 //                ExampleColumnHandle columnHandle = (ExampleColumnHandle) entry.getValue();
-
                 VariableReferenceExpression newVariable = context.getVariableAllocator().newVariable(variable.getSourceLocation(), "modVar", variable.getType());
                 assignments.put(newVariable, newColHandle);
                 outputs.add(newVariable);

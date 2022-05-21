@@ -13,25 +13,37 @@
  */
 package com.facebook.presto.reinsApi;
 
+import com.facebook.airlift.http.client.HttpClient;
+import com.facebook.airlift.http.client.Request;
+import com.facebook.airlift.http.client.jetty.JettyHttpClient;
+import com.facebook.presto.client.QueryResults;
+import com.facebook.presto.reinsApi.dto.ResDTO;
 import com.facebook.presto.reinsApi.dto.SearchTableFilterDTO;
 import com.facebook.presto.spi.relation.*;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
+import com.facebook.airlift.json.JsonCodec;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.facebook.airlift.http.client.JsonResponseHandler.createJsonResponseHandler;
+import static com.facebook.airlift.http.client.Request.Builder.preparePost;
+import static com.facebook.airlift.http.client.StaticBodyGenerator.createStaticBodyGenerator;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class GlobalIndexApi {
+    static HttpClient client;
+    static URI uri;
+    static {
+        client = new JettyHttpClient();
+        try {
+            uri = new URI("http://localhost:18880/searchNodes");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void iterPredict(RowExpression predict, SearchTableFilterDTO searchTableFilterDTO){
         if(predict instanceof CallExpression){
             CallExpression leaf = (CallExpression) predict;
@@ -62,17 +74,15 @@ public class GlobalIndexApi {
         }
     }
 
-    public static HashSet<String> getNodes(RowExpression predict) throws IOException {
-        HttpClient client = HttpClientBuilder.create().build();
+    public static Set<String> getNodes(RowExpression predict) throws Exception {
         SearchTableFilterDTO searchTableFilterDTO = new SearchTableFilterDTO();
         iterPredict(predict, searchTableFilterDTO);
-        HttpPost request = new HttpPost("http://localhost:18880/searchNodes");
-        Gson gson = new Gson();
-        StringEntity postingString = new StringEntity(gson.toJson(searchTableFilterDTO));
-        request.setEntity(postingString);
-        request.setHeader("Content-type", "application/json");
-        HttpResponse response = client.execute(request);
-        String responseBody =EntityUtils.toString(response.getEntity());
-        return gson.fromJson(responseBody, new TypeToken<HashSet<String>>() {}.getType());
+
+        JsonCodec<SearchTableFilterDTO> codec = JsonCodec.jsonCodec(SearchTableFilterDTO.class);
+        Request request = preparePost().setUri(uri).setBodyGenerator(createStaticBodyGenerator(codec.toJson(searchTableFilterDTO), UTF_8)).build();
+        JsonCodec<ResDTO> resDec = JsonCodec.jsonCodec(ResDTO.class);
+        ResDTO queryResults = client.execute(request,createJsonResponseHandler(resDec));
+
+        return queryResults.getNodes();
     }
 }
