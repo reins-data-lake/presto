@@ -51,7 +51,7 @@ public class GlobalIndexApi {
                 if(leaf.getArguments().get(0) instanceof VariableReferenceExpression){
                     if(((VariableReferenceExpression) leaf.getArguments().get(0)).getName().equals("timestamp")){
                         searchTableFilterDTO.setStartTime((Long) ((ConstantExpression) leaf.getArguments().get(1)).getValue());
-                        searchTableFilterDTO.setStartTime((Long) ((ConstantExpression) leaf.getArguments().get(2)).getValue());
+                        searchTableFilterDTO.setEndTime((Long) ((ConstantExpression) leaf.getArguments().get(2)).getValue());
                     }
                 }
             }
@@ -59,7 +59,7 @@ public class GlobalIndexApi {
             SpecialFormExpression node = (SpecialFormExpression) predict;
             if(node.getForm().name().equals("IN")){
                 List<RowExpression> args = node.getArguments();
-                if(((VariableReferenceExpression) args.get(0)).getName().equals("taxiId")){
+                if(((VariableReferenceExpression) args.get(0)).getName().equals("taxiid")){
                     List<Long> ids = new ArrayList<>();
                     for(int i = 1; i <args.size();i++){
                         ids.add((Long) ((ConstantExpression) args.get(i)).getValue());
@@ -79,7 +79,8 @@ public class GlobalIndexApi {
         iterPredict(predict, searchTableFilterDTO);
 
         JsonCodec<SearchTableFilterDTO> codec = JsonCodec.jsonCodec(SearchTableFilterDTO.class);
-        Request request = preparePost().setUri(uri).setBodyGenerator(createStaticBodyGenerator(codec.toJson(searchTableFilterDTO), UTF_8)).build();
+        Request request = preparePost().setUri(uri).setHeader("Content-Type", "application/json").
+                setBodyGenerator(createStaticBodyGenerator(codec.toJson(searchTableFilterDTO), UTF_8)).build();
         JsonCodec<ResDTO> resDec = JsonCodec.jsonCodec(ResDTO.class);
         ResDTO queryResults = client.execute(request,createJsonResponseHandler(resDec));
 

@@ -13,11 +13,18 @@
  */
 package com.facebook.presto.reinsApi.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Set;
 
 public class ResDTO {
     Set<String> nodes;
-
+    @JsonCreator
+    public ResDTO(@JsonProperty("nodes")  Set<String> nodes){
+        this.nodes = nodes;
+    }
+    @JsonProperty
     public Set<String> getNodes() {
         return nodes;
     }

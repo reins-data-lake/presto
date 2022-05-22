@@ -14,12 +14,15 @@
 package com.facebook.presto.reinsApi.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class SearchTableFilterDTO {
     List<Long> idList;
     long startTime;
     long endTime;
+
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
@@ -32,12 +35,16 @@ public class SearchTableFilterDTO {
     public void setIdList(List<Long> idList) {
         this.idList = idList;
     }
-    //    List<FieldFilter> filters;
-//    @Data
-//    public class FieldFilter {
-//        String field;
-//        String op;
-//        String val1;
-//        String val2;
-//    }
+    @JsonProperty
+    public List<Long> getIdList() {
+        return idList;
+    }
+    @JsonProperty
+    public long getEndTime() {
+        return endTime;
+    }
+    @JsonProperty
+    public long getStartTime() {
+        return startTime;
+    }
 }
